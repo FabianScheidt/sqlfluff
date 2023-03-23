@@ -288,10 +288,26 @@ class ColumnDefinitionSegment(BaseSegment):
                     Bracketed(Ref("NumericLiteralSegment"), optional=True),
                     optional=True,
                 ),
-                Sequence(Sequence("NOT", optional=True), "NULL", optional=True),
-                Sequence(
-                    "DEFAULT",
-                    OneOf(
+                AnySetOf(
+                    Sequence(Sequence("NOT", optional=True), "NULL"),
+                    Sequence(
+                        "DEFAULT",
+                        OneOf(
+                            Sequence(
+                                OneOf("CURRENT_TIMESTAMP", "NOW"),
+                                Bracketed(
+                                    Ref("NumericLiteralSegment", optional=True),
+                                    optional=True,
+                                ),
+                            ),
+                            Ref("NumericLiteralSegment"),
+                            Ref("QuotedLiteralSegment"),
+                            "NULL",
+                        ),
+                    ),
+                    Sequence(
+                        "ON",
+                        "UPDATE",
                         Sequence(
                             OneOf("CURRENT_TIMESTAMP", "NOW"),
                             Bracketed(
@@ -299,20 +315,7 @@ class ColumnDefinitionSegment(BaseSegment):
                                 optional=True,
                             ),
                         ),
-                        Ref("NumericLiteralSegment"),
-                        Ref("QuotedLiteralSegment"),
-                        optional=True,
                     ),
-                    optional=True,
-                ),
-                Sequence(
-                    Sequence("ON", "UPDATE", optional=True),
-                    "CURRENT_TIMESTAMP",
-                    Sequence(
-                        Bracketed(Ref("NumericLiteralSegment")),
-                        optional=True,
-                    ),
-                    optional=True,
                 ),
             ),
         ),
